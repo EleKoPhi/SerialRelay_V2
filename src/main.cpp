@@ -38,18 +38,16 @@ struct channel c1, c2, c3, c4;
 channel channels[noChanels] = {c1, c2, c3, c4};
 
 bool stC1 = false;
-int stC1Pin = 13;
+int stC1Pin = 7;
 
 bool stC2 = false;
-int stC2Pin = 12;
+int stC2Pin = 6;
 
 bool stC3 = false;
-int stC3Pin = 11;
+int stC3Pin = 5;
 
 bool stC4 = false;
-int stC4Pin = 10;
-
-
+int stC4Pin = 4;
 
 String active = "On ";
 String inActice = "Off";
@@ -118,8 +116,8 @@ void updateDisplay(bool c1, bool c2, bool c3, bool c4)
 
 void updateStatus(channel c)
 {
-    u8x8.setCursor(c.displayPositionX, c.displayPositionY);
-    u8x8.print(c.status ? active : inActice);
+  u8x8.setCursor(c.displayPositionX, c.displayPositionY);
+  u8x8.print(c.status ? active : inActice);
 }
 
 void setup()
@@ -155,26 +153,29 @@ void setup()
   channels[3].mask = 8;
   channels[3].idx = 4;
 
+  u8x8.begin();
+
   for (int index = 0; index < noChanels; index++)
   {
     pinMode(channels[index].pin, OUTPUT);
     digitalWrite(channels[index].pin, LOW);
-    updateStatus(channels[index]);
   }
-  
+
   resetSerialBuffer();
-  u8x8.begin();
+
   updateDisplay(false, false, false, false);
 }
 
 void loop()
 {
+  //Serial.write(0xff);
 
   if (Serial.available() >= size)
   {
 
-    returnLenght = Serial.readBytes(serialBuffer, size);
 
+    returnLenght = Serial.readBytes(serialBuffer, size);
+    
     // Check for valid frame layout
     // If layout is not valid - Return 8x 0xFF
     if (serialBuffer[0] != byte(startIdentifier) or serialBuffer[7] != byte(endIdentfier))
@@ -215,6 +216,10 @@ void loop()
         break;
 
       default:
+        for (int index = 0; index < size; index++)
+        {
+          Serial.write(serialBuffer[index]);
+        }
         break;
       }
     }

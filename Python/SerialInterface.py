@@ -104,10 +104,12 @@ debug = True
 foundDevice = False
 
 def connect_to_hardware():
+
     msg = msgFrame(findDevice, 0, 0)
     ports = serial.tools.list_ports.comports()
 
-    for port in ports:
+
+    for port in range(10):
         port = ports[-1]
         if debug:
             print(port)
@@ -115,7 +117,7 @@ def connect_to_hardware():
 
         try:
             SerialConnection = serial.Serial(port.device, timeout=1, baudrate=115200)
-            time.sleep(2)
+            time.sleep(3)
         except:
             if debug:
                 print("Error")  # time.sleep(0.1)
